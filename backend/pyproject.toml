@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "backend"
+version = "0.1.0"
+description = ""
+authors = ["James Lowry <jl@balkerne.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+boto3 = "^1.18.37"
+twilio = "^6.63.2"
+
+[tool.poetry.dev-dependencies]
+localstack = "^0.12.17"
+localstack-client = "^1.24"
+dotenv = "^0.0.5"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

@@ -1,0 +1,112 @@
+# Welcome to Serverless!
+#
+# This file is the main config file for your service.
+# It's very minimal at this point and uses default values.
+# You can always add more config options for more control.
+# We've included some commented out config examples here.
+# Just uncomment any of them to get that config option.
+#
+# For full config options, check the docs:
+#    docs.serverless.com
+#
+# Happy Coding!
+
+service: backend
+
+plugins:
+  - serverless-localstack
+  - serverless-python-requirements
+
+
+# You can pin your service to only deploy with a specific Serverless version
+# Check out our docs for more details
+frameworkVersion: ">=1.1.0 <=2.50.0"
+custom:
+  stage: ${opt:stage, local}
+  tableName: ${self:custom.stage}-VerificationCodes
+  localstack:
+    stages:
+      - local
+  pythonRequirements:
+    layer: true
+
+provider:
+  name: aws
+  runtime: python3.8
+  environment:
+   TABLENAME: ${self:custom.tableName}
+   STAGE: ${self:custom.stage}
+   TWILIO_ACCOUNT_SID: AC16357abd4ae8faf8c247c6722106205e
+   TWILIO_AUTH_TOKEN: 95941f6fa0251f55dd06bc599deef0b8
+  layers:
+      - Ref: PythonRequirementsLambdaLayer
+
+
+
+# you can overwrite defaults here
+#  stage: dev
+#  region: us-east-1
+
+# you can add statements to the Lambda function's IAM Role here
+  iamRoleStatements:
+   - Effect: "Allow"
+     Action:
+       - "dynamodb:PutItem"
+       - "dynamodb:Query"
+     Resource: 
+      - "Fn::GetAtt": [ CodeTable, Arn ]
+   - Effect: "Allow"
+     Action: 
+      - "sns:Publish"
+     Resource: "*"
+      # - GetAtt:
+      #    - CodeTable
+      #    - Arn
+
+# you can define service wide environment variables here
+
+
+# you can add packaging information here
+package:
+ include:
+  - backend/
+ exclude:
+   - node_modules/**
+   - tests/**
+   - backend/__pycache__/**
+
+functions:
+  Create:
+    handler: backend/code_api/post.post
+    events:
+      - http:
+            path: codes/
+            method: post
+  Get:
+    handler: backend/code_api/get.get
+    events:
+      - http:
+            path: codes/
+            method: get
+
+
+# you can add CloudFormation resource templates here
+resources:
+ Resources:
+   CodeTable:
+     Type: AWS::DynamoDB::Table
+     Properties: 
+      AttributeDefinitions: 
+       - AttributeName: "pk"
+         AttributeType: "S"
+      KeySchema: 
+       - AttributeName: "pk"
+         KeyType: "HASH"
+      ProvisionedThroughput: 
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+      TableName: ${self:custom.tableName}
+
+ Outputs:
+    Tablename:
+      Value: !Ref CodeTable
