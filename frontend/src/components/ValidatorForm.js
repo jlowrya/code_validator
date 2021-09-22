@@ -1,4 +1,5 @@
 import { Component } from 'react'
+import axios from 'axios';
 
 class ValidatorForm extends Component {
     constructor(props) {
@@ -28,16 +29,46 @@ class ValidatorForm extends Component {
     }
   
     handleSubmit(event) {
-      this.setState({
-          ...this.state,
-          message: `A verification code has been sent to ${this.state.phone}`,
-          codeCreated: true
+        console.log('Handling submit')
+        const client = axios.create({
+            baseURL: 'https://0245u3tfo7.execute-api.us-east-1.amazonaws.com/dev/codes'
+          })
+        console.log('Created client')
+        client.post(
+            `?phone=${this.state.phone}`
+        ).then((resp) => {
+            console.log(resp.data)
+            this.setState({
+                ...this.state,
+                message: `A verification code has been sent to ${this.state.phone}`,
+                codeCreated: true
+            })
+        }).catch((e) => {
+            console.log(e)
         })
-      event.preventDefault();
+        event.preventDefault();
     }
 
     verifyCode(event) {
         console.log(`Verifying code ${this.state.code} for ${this.state.phone}`)
+        console.log('Handling submit')
+        const client = axios.create({
+            baseURL: 'https://0245u3tfo7.execute-api.us-east-1.amazonaws.com/dev/codes'
+        })
+        console.log('Created client')
+        client.get(
+            `?phone=${this.state.phone}&code=${this.state.code}`
+        ).then((resp) => {
+            console.log(resp.data)
+            this.setState({
+                message: `Code successfully validated!`
+            })
+        }).catch((e) => {
+            console.log(e)
+            this.setState({
+                message: `Code validation failed.`
+            })
+        })
         event.preventDefault();
     }
   
