@@ -1,5 +1,6 @@
 import json, random
 from backend.verification_code import VerificationCode, SMSCode, EmailCode
+from requests import Response, status_codes
 ###
 # primary key = {email} or {phone}
 # attributes - ttl, code
@@ -21,15 +22,13 @@ def post(event, context):
             SMSCode(code=code, phone=phone).save_and_send()
             body += f"{phone}"
 
-        return {
-            "statusCode": 201,
-            "body": body
-        }
+        return Response(
+            headers={'Access-Control-Allow-Origin': '*'},
+            status_code=201,
+            body=body
+        ).json()
 
-    return {
-        "statusCode": 500,
-        "body": "Please provide an email or phone number."
-    }
+    return Response(status_code=500,body="Please provide an email or phone number.").json()
 
 def get(event, context):
     query_params = event.get('queryStringParameters')

@@ -67,41 +67,41 @@ class VerificationCode:
     def send(self) -> bool:
         pass
 
-# class EmailCode(VerificationCode):
-#     def __init__(self, email: str):
-#         self.email = email
-#         self.comm_type = CommType.EMAIL
+class EmailCode(VerificationCode):
+    def __init__(self, email: str):
+        self.email = email
+        self.comm_type = CommType.EMAIL
     
-#     def save(self):
-#         super.save(self.comm_type, self.email)
+    def save(self):
+        super.save(self.comm_type, self.email)
 
-#     def send(self):
-#         try:
-#             ses.send_email(
-#                 #TODO: verify email address for source to use
-#                 Source='string',
-#                 Destination={
-#                     'ToAddresses': [
-#                         self.email,
-#                     ]
-#                 },
-#                 Message={
-#                     'Subject': {
-#                         'Data': 'Validation code',
-#                         #IDEA: UTF supports emojis, so could potentially allow for verification via emojis
-#                         'Charset': 'UTF-8'
-#                     },
-#                     'Body': {
-#                         'Text': {
-#                             'Data': self.code,
-#                             'Charset': 'UTF-8'
-#                         }
-#                     }
-#                 }
-#             )
-#             return True
-#         except Exception:
-#             return False
+    def send(self):
+        try:
+            ses.send_email(
+                #TODO: verify email address for source to use
+                Source='string',
+                Destination={
+                    'ToAddresses': [
+                        self.email,
+                    ]
+                },
+                Message={
+                    'Subject': {
+                        'Data': 'Validation code',
+                        #IDEA: UTF supports emojis, so could potentially allow for verification via emojis
+                        'Charset': 'UTF-8'
+                    },
+                    'Body': {
+                        'Text': {
+                            'Data': self.code,
+                            'Charset': 'UTF-8'
+                        }
+                    }
+                }
+            )
+            return True
+        except Exception:
+            return False
 
 class SMSCode(VerificationCode):
     def __init__(self, phone, **kwargs):

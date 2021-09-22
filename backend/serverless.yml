@@ -24,6 +24,8 @@ frameworkVersion: ">=1.1.0 <=2.50.0"
 custom:
   stage: ${opt:stage, local}
   tableName: ${self:custom.stage}-VerificationCodes
+  twilioSid: ${opt:sid}
+  twilioToken: ${opt:token}
   localstack:
     stages:
       - local
@@ -36,8 +38,8 @@ provider:
   environment:
    TABLENAME: ${self:custom.tableName}
    STAGE: ${self:custom.stage}
-   TWILIO_ACCOUNT_SID: AC16357abd4ae8faf8c247c6722106205e
-   TWILIO_AUTH_TOKEN: 95941f6fa0251f55dd06bc599deef0b8
+   TWILIO_ACCOUNT_SID: ${self:custom.twilioSid}
+   TWILIO_AUTH_TOKEN: ${self:custom.twilioToken}
   layers:
       - Ref: PythonRequirementsLambdaLayer
 
@@ -80,14 +82,16 @@ functions:
     handler: backend/code_api/post.post
     events:
       - http:
-            path: codes/
-            method: post
+          path: codes/
+          method: post
+          cors: true
   Get:
     handler: backend/code_api/get.get
     events:
       - http:
-            path: codes/
-            method: get
+          path: codes/
+          method: get
+          cors: true
 
 
 # you can add CloudFormation resource templates here

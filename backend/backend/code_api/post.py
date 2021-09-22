@@ -1,5 +1,6 @@
 import json, random
 from backend.verification_code import VerificationCode, SMSCode, EmailCode
+from requests.models import Response
 ###
 # primary key = {email} or {phone}
 # attributes - ttl, code
@@ -22,11 +23,15 @@ def post(event, context):
             body += f"{phone}"
 
         return {
+            "headers": {'Access-Control-Allow-Origin': '*'},
             "statusCode": 201,
             "body": body
         }
 
     return {
+        "headers": {'Access-Control-Allow-Origin': '*'},
         "statusCode": 500,
         "body": "Please provide an email or phone number."
     }
+
+    
